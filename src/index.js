@@ -14,6 +14,8 @@ app.use((req, res, next) => {
 });
 
 app.use(require("./routes"));
+app.use("/user", require("./routes/user"));
+app.use("/recomendation", require("./routes/recomendations"));
 
 app.listen(app.get("port"), () => {
   console.log(`Server on port ${app.get("port")}`);
