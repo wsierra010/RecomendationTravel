@@ -1,91 +1,79 @@
-const pool = require("../database");
-const helpers = require("../lib/helpers");
+const { 
+  createRecomendation, 
+  findVotedRecomendation, 
+  getVoteRecomendation, 
+  deleteVoteRecomendation, 
+  getDescription, 
+  getRecomendationByCategory, 
+  getRecomendationByCity} = require("../services/recomendation-service");
 
-const createRecomendation = async (req, res, next) => {
+
+const newRecomendation = async (req, res, next) => {
   const { title, category, city, header, description, photo } = req.body;
-  
 
-  await pool.query("INSERT INTO recomendation SET ?", {
-    title,
-    category,
-    city,
-    header,
-    description,
-    photo,
-    user_id: req.auth.id,
-  });
-  res.send("Added recommendation");
+  if (!(title && category && city && header && description && photo)) {
+    const error = new Error("You need to fill in all the fields");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (!req.auth.id) {
+    const error = new Error("you don't have authorization");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  await createRecomendation(title, category, city, header, description, photo, req.auth.id);
+
+  res.status(201)
+  .send("Added recommendation");
 };
 
 const voteRecomendation = async (req, res, next) => {
-  console.log(req.params);
-  console.log(req.auth.id);
-  const findRecomds = await pool.query(`SELECT * FROM recomendation WHERE id = ${req.params.id}`);
-  const findVoteRecomds = await pool.query(`SELECT * FROM vote_recomendation WHERE userid = ${req.auth.id} AND recomendation_id = ${req.params.id}`);
   
-  console.log(findVoteRecomds);
-  const {id} = req.params
+  const findVoteRecomds = await findVotedRecomendation(req.auth.id, req.params.id);
+
+  if (!req.auth.id) {
+    const error = new Error("you don't have authorization");
+    error.statusCode = 401;
+    throw error;
+  }
   
   if (findVoteRecomds.length === 0) {
-    await pool.query("INSERT INTO vote_recomendation SET ?", {
-    recomendation_id: id,
-      userid: req.auth.id,
-    })
+    await getVoteRecomendation(req.auth.id, req.params.id);
     res.send('Hecho');
 
   } else {
-    await pool.query(`DELETE FROM vote_recomendation WHERE userid = ${req.auth.id} AND recomendation_id = ${req.params.id}`);
+    await deleteVoteRecomendation(req.auth.id, req.params.id)
     res.send('Eliminado');
   }
-  // if (findVoteRecomds) {
-  //  next();
-  // }
-
-  // if(like === true){
-  //   await pool.query("INSERT INTO vote_recomendation SET ?", {
-  //     recomendation_id: targetId,
-  //     userid: tokenData.id,
-  //   })
-  //   res.send('Votación hecha');
-  // }else if (like === false){
-  //   await pool.query(`DELETE FROM vote_recomendation WHERE recomendation_id = ${targetId}`);
-  //   res.send('Recomendación Eliminada.');
-  // }else {
-  //   res.status(404)
-  //   res.send('No puedes hacer esta votación')
-  // }
 };
 
 const getDetailRecomendation = async (req, res, next) => {
   const {id} = req.params;
 
-  const recomendation = await pool.query(`SELECT * FROM recomendation WHERE id = ${id}`)
+  const recomendation = await getDescription(id);
 
   res.send(recomendation);
 }
 
-const city = async (req, res, next) => {
-  console.log(req.query.category);
+const searchRecomendations = async (req, res, next) => {
+  const {city, category} = req.query;
 
-  const recomendation = await pool.query(`SELECT * FROM recomendation WHERE city = '${req.params.city}'`)
-  res.send(recomendation)
-
+  if (category) {
+    const getByCategory = await getRecomendationByCategory(category);
+    res.send(getByCategory);
+  }
+  if (city) {
+    const getByCity = await getRecomendationByCity(city);
+    res.send(getByCity)
+  }
 }
-
-const category = async (req, res, next) => {
-  
-  const recomendation = await pool.query(`SELECT * FROM recomendation WHERE category = '${req.params.category}'`)
-  res.send(recomendation)
-
-}
-
-
 
 
 module.exports = {
-  createRecomendation,
+  newRecomendation,
   voteRecomendation,
   getDetailRecomendation,
-  city,
-  category,
+  searchRecomendations,
 };

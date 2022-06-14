@@ -14,6 +14,7 @@
   - [About The Project](#about-the-project)
   - [Quick start](#quick-start)
     - [Built With](#built-with)
+  - [EndPoints](#endpoints)
 
 
 <!-- ABOUT THE PROJECT -->
@@ -45,3 +46,70 @@ La API esta integramente desarrollada con NodeJS y su framework ExpressJS.
 
 * [Node.js](https://nodejs.org/)
 * [Express.js](https://expressjs.com/)
+
+
+
+<!-- GETTING STARTED -->
+## EndPoints
+
+<b>EndPoint SignUp:</b>
+```sh
+  http://localhost:4000/user/signup
+```
+
+<img src="./assets/images/SignUp.PNG" alt="Sign Up">
+
+<hr>
+
+<b>EndPoint SignIn:</b>
+```sh
+  http://localhost:4000/user/signin
+```
+
+<img src="./assets/images/SignIn.PNG" alt="Sign Up">
+
+<hr>
+
+<b>EndPoint Create Recomendation:</b>
+```sh
+  http://localhost:4000/recomendation/create
+```
+
+* Para poder utilizar este endpoint necesitas haberte logeado previamente y obtener el Barer token que se proporciona.
+
+<img src="./assets/images/AddRecomendation.PNG" alt="Sign Up">
+
+<hr>
+
+<b>EndPoint vote Recomendations:</b>
+```sh
+  http://localhost:4000/recomendation/like/:id
+```
+
+* Para poder utilizar este endpoint necesitas tener un Barer Token.
+
+<img src="./assets/images/voteRecomendation.PNG" alt="Sign Up">
+
+<hr>
+
+<b>Endpoint Search by Category:</b>
+```sh
+  http://localhost:4000/recomendation/find/
+```
+
+* Para poder utilizar este endpoint necesitas pasar por Query el parametro category.
+
+<img src="./assets/images/byCategory.PNG" alt="Sign Up">
+
+<hr>
+
+<b>Endpoint Search by City:</b>
+```sh
+  http://localhost:4000/recomendation/find/
+```
+
+* Para poder utilizar este endpoint necesitas pasar por Query el parametro city.
+
+<img src="./assets/images/byCity.PNG" alt="Sign Up">
+
+<hr>
