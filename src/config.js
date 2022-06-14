@@ -1,3 +1,3 @@
 module.exports = {
-    secret: 'secreto'
+    secret: process.env.SECRET_JSONWT
 }
